@@ -16,10 +16,10 @@
     }
 
     body {
-      background: #073332;        /* Fond principal modifié */
+      background: #073332;
       font-family: 'Inter', sans-serif;
       padding: 2rem 1.5rem;
-      color: #e0e8e8;            /* Texte général adapté */
+      color: #e0e8e8;
     }
 
     .container {
@@ -50,8 +50,6 @@
       background: none;
       color: #7ec8c8;
       font-size: 2rem;
-      background-clip: unset;
-      -webkit-background-clip: unset;
     }
 
     .sub {
@@ -64,7 +62,7 @@
       padding-top: 0.7rem;
     }
 
-    /* barre de recherche / filtre */
+    /* barre de recherche */
     .search-bar {
       background: #0a4a48;
       border-radius: 60px;
@@ -75,7 +73,6 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
       margin-bottom: 2rem;
       border: 1px solid #1a6a68;
-      transition: all 0.2s;
     }
 
     .search-bar i {
@@ -127,7 +124,6 @@
       color: #9ec8c8;
       cursor: pointer;
       transition: 0.2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -143,13 +139,13 @@
     /* grille membres */
     .members-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
       gap: 1.3rem;
     }
 
-    /* carte membre - adaptée au fond sombre */
+    /* carte membre */
     .member-card {
-      background: #0d4240;        /* Fond carte adapté - légèrement plus clair que le body */
+      background: #0d4240;
       border-radius: 24px;
       padding: 1.2rem 1.5rem;
       transition: all 0.25s ease;
@@ -188,29 +184,37 @@
       font-weight: 700;
       font-size: 1.2rem;
       letter-spacing: -0.2px;
-      color: #ffffff;            /* Nom en blanc pour lisibilité */
+      color: #ffffff;
       display: flex;
       align-items: baseline;
       flex-wrap: wrap;
       gap: 6px;
+      margin-bottom: 8px;
     }
 
     .member-name .fullname {
       word-break: break-word;
     }
 
+    /* Section téléphone + boutons */
+    .phone-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
     .member-phone {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-top: 8px;
       background: #1a6a68;
       padding: 6px 12px;
       border-radius: 32px;
       font-size: 0.85rem;
       font-weight: 500;
-      color: #b8e4e4;            /* Texte téléphone adapté */
-      width: fit-content;
+      color: #b8e4e4;
     }
 
     .member-phone i {
@@ -222,6 +226,57 @@
       color: #8aaeae;
       font-style: italic;
       font-size: 0.8rem;
+    }
+
+    /* Boutons d'action */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .action-btn {
+      background: #1a6a68;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #b8e4e4;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.08);
+      background: #2a8a88;
+      color: #ffffff;
+    }
+
+    .whatsapp-btn:hover {
+      background: #25D366;
+      color: white;
+    }
+
+    .call-btn:hover {
+      background: #34B7F1;
+      color: white;
+    }
+
+    .sms-btn:hover {
+      background: #FF9800;
+      color: white;
+    }
+
+    /* Désactivé si pas de numéro */
+    .action-btn.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
     }
 
     /* État vide */
@@ -279,9 +334,17 @@
       }
       .member-card {
         padding: 1rem 1.2rem;
+        flex-wrap: wrap;
       }
-      .member-name {
-        font-size: 1rem;
+      .member-info {
+        min-width: 0;
+      }
+      .phone-actions {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .members-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -307,11 +370,12 @@
   </div>
 
   <div id="membersContainer">
-    <!-- loader par défaut -->
     <div class="loader"><div class="spinner"></div></div>
   </div>
   <footer>
-    <i class="fas fa-mobile-alt"></i> Données issues de Firebase • Seuls les membres actifs avec nom & numéro apparaissent
+    <i class="fab fa-whatsapp"></i> WhatsApp • 
+    <i class="fas fa-phone"></i> Appel • 
+    <i class="fas fa-envelope"></i> SMS
   </footer>
 </div>
 
@@ -320,7 +384,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  // Configuration Firebase (fournie)
+  // Configuration Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyA-TpblN0YnekG2tKFRhjOwwEd80qke5pk",
     authDomain: "ansar-69617.firebaseapp.com",
@@ -331,16 +395,24 @@
     measurementId: "G-5XLSPLXH81"
   };
 
-  // Initialisation
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const membersCollection = collection(db, "members");
 
-  // Variables globales
   let allMembers = [];
   let filterText = "";
 
-  // Helper: construire nom complet
+  // Nettoyer un numéro de téléphone (enlève espaces, tirets, etc.)
+  function cleanPhoneNumber(phone) {
+    if (!phone) return '';
+    // Garde uniquement les chiffres et le signe +
+    let cleaned = phone.toString().replace(/[^\d+]/g, '');
+    // Si le numéro commence par 0 et n'a pas d'indicatif, on ajoute +221 (Sénégal par défaut)
+    // Mais on laisse tel quel, les liens fonctionneront avec le numéro brut
+    return cleaned;
+  }
+
+  // Construire nom complet
   function buildFullName(memberData, docId) {
     let first = memberData.firstname || "";
     let last = memberData.lastname || "";
@@ -351,7 +423,7 @@
     return `Membre ${docId.slice(0,6)}`;
   }
 
-  // Extraire numéro de téléphone
+  // Extraire numéro
   function extractPhone(memberData) {
     if (memberData.phone && typeof memberData.phone === "string" && memberData.phone.trim() !== "") {
       return memberData.phone.trim();
@@ -362,8 +434,42 @@
     if (memberData.mobile && typeof memberData.mobile === "string" && memberData.mobile.trim() !== "") {
       return memberData.mobile.trim();
     }
-    if (memberData.contact && typeof memberData.contact === "string") return memberData.contact.trim();
     return null;
+  }
+
+  // Générer les boutons d'action
+  function getActionButtons(phoneNumber) {
+    if (!phoneNumber) {
+      return `
+        <div class="action-buttons">
+          <span class="action-btn disabled"><i class="fab fa-whatsapp"></i></span>
+          <span class="action-btn disabled"><i class="fas fa-phone"></i></span>
+          <span class="action-btn disabled"><i class="fas fa-comment"></i></span>
+        </div>
+      `;
+    }
+    
+    const cleanPhone = cleanPhoneNumber(phoneNumber);
+    // WhatsApp (même numéro propre)
+    const whatsappUrl = `https://wa.me/${cleanPhone}`;
+    // Appel (tel:)
+    const callUrl = `tel:${cleanPhone}`;
+    // SMS (sms:)
+    const smsUrl = `sms:${cleanPhone}`;
+    
+    return `
+      <div class="action-buttons">
+        <a href="${whatsappUrl}" target="_blank" class="action-btn whatsapp-btn" title="WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="${callUrl}" class="action-btn call-btn" title="Appeler">
+          <i class="fas fa-phone"></i>
+        </a>
+        <a href="${smsUrl}" class="action-btn sms-btn" title="Envoyer un SMS">
+          <i class="fas fa-comment"></i>
+        </a>
+      </div>
+    `;
   }
 
   // Filtrer et afficher
@@ -402,6 +508,7 @@
         ? `<span class="member-phone"><i class="fas fa-phone-alt"></i> ${member.phoneNumber}</span>` 
         : `<span class="member-phone no-phone"><i class="fas fa-phone-slash"></i> Non renseigné</span>`;
       
+      const actionButtons = getActionButtons(member.phoneNumber);
       const initial = member.fullName.charAt(0).toUpperCase() || "?";
       
       return `
@@ -413,7 +520,10 @@
             <div class="member-name">
               <span class="fullname">${escapeHtml(member.fullName)}</span>
             </div>
-            ${phoneDisplay}
+            <div class="phone-actions">
+              ${phoneDisplay}
+              ${actionButtons}
+            </div>
           </div>
         </div>
       `;
@@ -452,7 +562,6 @@
           id: docId,
           fullName: fullName,
           phoneNumber: phoneNumber,
-          rawData: data
         });
       });
       
@@ -460,16 +569,13 @@
       allMembers = membersList;
       filterAndRender();
     } catch (error) {
-      console.error("Erreur lors du chargement Firebase:", error);
-      const containerEl = document.getElementById("membersContainer");
-      containerEl.innerHTML = `
+      console.error("Erreur Firebase:", error);
+      container.innerHTML = `
         <div class="empty-state">
           <i class="fas fa-exclamation-triangle"></i>
-          <p>Impossible de charger les données depuis Firebase.<br>Vérifiez votre connexion ou les règles de sécurité.<br><span style="font-size:0.8rem;">${error.message}</span></p>
+          <p>Impossible de charger les données.<br>${error.message}</p>
         </div>
       `;
-      const counterSpan = document.getElementById("memberCounter");
-      if (counterSpan) counterSpan.textContent = `Erreur chargement`;
     }
   }
 
@@ -488,9 +594,7 @@
     loadMembers();
     const refreshBtn = document.getElementById("refreshBtn");
     if (refreshBtn) {
-      refreshBtn.addEventListener("click", () => {
-        loadMembers();
-      });
+      refreshBtn.addEventListener("click", () => loadMembers());
     }
   }
   
