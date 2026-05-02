@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Annuaire des Membres - Noms & Numéros</title>
+  <!-- Google Fonts pour un style moderne -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (gratuit) pour icônes légères -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+background: linear-gradient(145deg, #073332 0%, #0a4a4a 100%);
+      font-family: 'Inter', sans-serif;
+      padding: 2rem 1.5rem;
+      color: #1a2c3e;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* En-tête */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #1e3c72, #2b4c7c);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header h1 i {
+      background: none;
+      color: #2c6e9e;
+      font-size: 2rem;
+      background-clip: unset;
+      -webkit-background-clip: unset;
+    }
+
+    .sub {
+      color: #4a627a;
+      margin-top: 0.5rem;
+      font-weight: 500;
+      font-size: 0.95rem;
+      border-top: 1px solid #cbdbe2;
+      display: inline-block;
+      padding-top: 0.7rem;
+    }
+
+    /* barre de recherche / filtre */
+    .search-bar {
+background: #073332;
+      border-radius: 60px;
+      padding: 0.5rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s;
+    }
+
+    .search-bar i {
+      color: #7c8ea0;
+      font-size: 1.2rem;
+    }
+
+    .search-bar input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      padding: 12px 0;
+      background: transparent;
+      font-weight: 400;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .search-bar input::placeholder {
+      color: #a0b3c9;
+    }
+
+    /* compteur et rafraîchissement */
+    .info-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .counter {
+      background: #eef2f9;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #1e4a76;
+    }
+
+    .refresh-btn {
+      background: white;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #2c6e9e;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .refresh-btn:hover {
+      background: #e4edf5;
+      transform: scale(0.97);
+    }
+
+    /* grille membres */
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.3rem;
+    }
+
+    /* carte membre */
+    .member-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.2rem 1.5rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid #eef2f9;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .member-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 30px -12px rgba(0, 32, 64, 0.12);
+      border-color: #cddfed;
+    }
+
+    .avatar-icon {
+      background: #eef3fc;
+      width: 52px;
+      height: 52px;
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2c6e9e;
+      font-size: 1.7rem;
+      flex-shrink: 0;
+    }
+
+    .member-info {
+      flex: 1;
+    }
+
+    .member-name {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.2px;
+      color: #0f2b3f;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .member-name .fullname {
+      word-break: break-word;
+    }
+
+    .member-phone {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      background: #f7f9fd;
+      padding: 6px 12px;
+      border-radius: 32px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #1b5e7a;
+      width: fit-content;
+    }
+
+    .member-phone i {
+      font-size: 0.75rem;
+      color: #3b82b6;
+    }
+
+    .no-phone {
+      color: #94a3b8;
+      font-style: italic;
+      font-size: 0.8rem;
+    }
+
+    /* État vide */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: #fbfdff;
+      border-radius: 2rem;
+      margin-top: 1rem;
+      border: 1px dashed #cbdde9;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: #b9cfec;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+      color: #5e7188;
+    }
+
+    /* loader */
+    .loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem;
+    }
+
+    .spinner {
+      width: 42px;
+      height: 42px;
+      border: 3px solid #dce5f0;
+      border-top: 3px solid #2b6a9f;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 0.75rem;
+      color: #6b85a0;
+    }
+
+    @media (max-width: 650px) {
+      body {
+        padding: 1.2rem;
+      }
+      .member-card {
+        padding: 1rem 1.2rem;
+      }
+      .member-name {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>
+      <i class="fas fa-address-book"></i> 
+      Annuaire membres
+    </h1>
+    <div class="sub">Noms & numéros de téléphone</div>
+  </div>
+
+  <div class="search-bar">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Rechercher par nom, prénom ou numéro..." autocomplete="off">
+  </div>
+
+  <div class="info-panel">
+    <span class="counter" id="memberCounter">— membre(s)</span>
+    <button class="refresh-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> Actualiser</button>
+  </div>
+
+  <div id="membersContainer">
+    <!-- loader par défaut -->
+    <div class="loader"><div class="spinner"></div></div>
+  </div>
+  <footer>
+    <i class="fas fa-mobile-alt"></i> Données issues de la base de données
+  </footer>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  // Configuration Firebase (fournie)
+  const firebaseConfig = {
+    apiKey: "AIzaSyA-TpblN0YnekG2tKFRhjOwwEd80qke5pk",
+    authDomain: "ansar-69617.firebaseapp.com",
+    projectId: "ansar-69617",
+    storageBucket: "ansar-69617.firebasestorage.app",
+    messagingSenderId: "1075104578958",
+    appId: "1:1075104578958:web:b5d55c76def4d1d430b8df",
+    measurementId: "G-5XLSPLXH81"
+  };
+
+  // Initialisation
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const membersCollection = collection(db, "members");
+
+  // Variables globales
+  let allMembers = [];        // tableau d'objets membre { id, fullName, phone, rawFirst, rawLast }
+  let filterText = "";
+
+  // Helper: construire nom complet, gérer les champs firstname / lastname
+  function buildFullName(memberData, docId) {
+    let first = memberData.firstname || "";
+    let last = memberData.lastname || "";
+    // si firstname & lastname existent
+    if (first.trim() || last.trim()) {
+      return `${first} ${last}`.trim();
+    }
+    // fallback: parfois il peut y avoir un champ "name"? pas vu dans l'aperçu mais au cas où
+    if (memberData.name && typeof memberData.name === "string") return memberData.name.trim();
+    // sinon on retourne l'ID du document pour ne pas laisser vide
+    return `Membre ${docId.slice(0,6)}`;
+  }
+
+  // Extraire numéro de téléphone (plusieurs champs potentiels : "phone", "telephone", "mobile")
+  function extractPhone(memberData) {
+    // d'après l'extrait fourni: les membres ont "phone": "771102496"
+    if (memberData.phone && typeof memberData.phone === "string" && memberData.phone.trim() !== "") {
+      return memberData.phone.trim();
+    }
+    // autres variantes possibles (selon structure du document)
+    if (memberData.telephone && typeof memberData.telephone === "string" && memberData.telephone.trim() !== "") {
+      return memberData.telephone.trim();
+    }
+    if (memberData.mobile && typeof memberData.mobile === "string" && memberData.mobile.trim() !== "") {
+      return memberData.mobile.trim();
+    }
+    // Si champ contact imbriqué? Optionnel mais robuste
+    if (memberData.contact && typeof memberData.contact === "string") return memberData.contact.trim();
+    return null;
+  }
+
+  // Filtrer et afficher les membres selon recherche
+  function filterAndRender() {
+    const container = document.getElementById("membersContainer");
+    if (!container) return;
+
+    const searchLower = filterText.toLowerCase().trim();
+    let filtered = [...allMembers];
+
+    if (searchLower !== "") {
+      filtered = filtered.filter(member => {
+        // recherche sur nom complet et numéro
+        const nameMatch = member.fullName.toLowerCase().includes(searchLower);
+        const phoneMatch = member.phoneNumber && member.phoneNumber.toLowerCase().includes(searchLower);
+        return nameMatch || phoneMatch;
+      });
+    }
+
+    // Mise à jour compteur
+    const counterSpan = document.getElementById("memberCounter");
+    if (counterSpan) {
+      counterSpan.textContent = `${filtered.length} membre(s)`;
+    }
+
+    // Affichage
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-user-slash"></i>
+          <p>Aucun membre ne correspond à votre recherche.<br>Essayez un autre nom ou numéro.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Génération cartes
+    const cardsHTML = filtered.map(member => {
+      // Téléphone formaté (ou message non renseigné)
+      const phoneDisplay = member.phoneNumber 
+        ? `<span class="member-phone"><i class="fas fa-phone-alt"></i> ${member.phoneNumber}</span>` 
+        : `<span class="member-phone no-phone"><i class="fas fa-phone-slash"></i> Non renseigné</span>`;
+      
+      // Première lettre pour avatar
+      const initial = member.fullName.charAt(0).toUpperCase() || "?";
+      
+      return `
+        <div class="member-card" data-id="${member.id}">
+          <div class="avatar-icon">
+            <span style="font-weight:600; font-size:1.3rem;">${initial}</span>
+          </div>
+          <div class="member-info">
+            <div class="member-name">
+              <span class="fullname">${escapeHtml(member.fullName)}</span>
+            </div>
+            ${phoneDisplay}
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    container.innerHTML = `<div class="members-grid">${cardsHTML}</div>`;
+  }
+
+  // petite fonction d'échappement basique pour éviter XSS
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+      return c;
+    });
+  }
+
+  // Charger les membres depuis Firestore
+  async function loadMembers() {
+    const container = document.getElementById("membersContainer");
+    // show loader
+    container.innerHTML = `<div class="loader"><div class="spinner"></div></div>`;
+    
+    try {
+      // Option: ordonner par nom? On peut juste récupérer tous les docs sans orderBy pour la rapidité
+      // Mais orderBy peut échouer si un champ n'existe pas, on évite l'ordre sur firstname pour la robustesse
+      // On récupère simplement tous les documents de la collection members
+      const querySnapshot = await getDocs(membersCollection);
+      const membersList = [];
+      
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const docId = doc.id;
+        
+        // OPTION : selon vos besoins, on peut ignorer les membres "inactifs" si champ status === "inactif"
+        // Dans votre extrait, le membre a status: "actif". Pour rester cohérent avec la demande : afficher tous les membres (par défaut)
+        // Cependant, si vous souhaitez n'afficher que les membres actifs, décommentez la condition suivante:
+        // if (data.status === "inactif") return;
+        
+        // Construire nom complet
+        const fullName = buildFullName(data, docId);
+        // Extraire numéro
+        const phoneNumber = extractPhone(data);
+        
+        // Si aucun nom n'est significatif (ex: fullName commence par "Membre" mais qu'on a un champ email ou autre, on garde quand même)
+        // Mais on veut afficher seulement les membres qui ont au moins un nom cohérent -- ici on garde tous, 
+        // car même sans nom on affiche une clé, mais pour une expérience propre on peut filtrer ceux qui n'ont aucun nom ni aucun phone? 
+        // La demande précise : "affiche le nom des membres et leur numero seulement". Par défaut on affiche, même si numéro manquant -> "non renseigné"
+        // Mais si le membre n'a aucun champ de nom valide (ex: pas firstname/lastname), on lui attribue un placeholder.
+        
+        membersList.push({
+          id: docId,
+          fullName: fullName,
+          phoneNumber: phoneNumber,
+          rawData: data
+        });
+      });
+      
+      // Option : trier par nom alphabétique pour un affichage propre
+      membersList.sort((a, b) => a.fullName.localeCompare(b.fullName));
+      allMembers = membersList;
+      
+      // Appliquer le filtre et afficher
+      filterAndRender();
+    } catch (error) {
+      console.error("Erreur lors du chargement Firebase:", error);
+      const containerEl = document.getElementById("membersContainer");
+      containerEl.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Impossible de charger les données depuis Firebase.<br>Vérifiez votre connexion ou les règles de sécurité.<br><span style="font-size:0.8rem;">${error.message}</span></p>
+        </div>
+      `;
+      const counterSpan = document.getElementById("memberCounter");
+      if (counterSpan) counterSpan.textContent = `Erreur chargement`;
+    }
+  }
+
+  // Gestionnaire d'input recherche
+  function setupSearch() {
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        filterText = e.target.value;
+        filterAndRender();
+      });
+    }
+  }
+  
+  // Initialisation + refresh manuel
+  function init() {
+    setupSearch();
+    loadMembers();
+    const refreshBtn = document.getElementById("refreshBtn");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", () => {
+        loadMembers();
+      });
+    }
+  }
+  
+  init();
+</script>
+</body>
+</html>
